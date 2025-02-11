@@ -1,66 +1,54 @@
-import { db } from "./Firebase-Config";
-import { addDoc, collection, getDocs } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+// App.jsx
+import React, { useEffect, useReducer } from "react";
+import {
+  fetchUsers,
+  createUser,
+  updateAge,
+  deleteUser,
+} from "./services/UserServices";
+import { initialState, userActionReducer } from "./reducers/UserReducer";
+import UserForm from "./UserForm";
+import UserList from "./UserList";
 
 export const App = () => {
-  const [users, setUsers] = useState([]);
-  const [name, setName] = useState("");
-  const [country, setCountry] = useState("");
-  const [age, setAge] = useState(0);
-  const userCollectionRef = collection(db, "crud");
+  // ✅ useReducer for state management
+  const [state, dispatch] = useReducer(userActionReducer, initialState);
 
+  // ✅ Fetch users when component mounts
   useEffect(() => {
     const getUsers = async () => {
-      const data = await getDocs(userCollectionRef);
-      console.log(data);
-      const docRef = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-
-      console.log(docRef);
-      setUsers(docRef);
+      const usersList = await fetchUsers();
+      dispatch({ type: "INITIALIZE", payload: usersList });
     };
     getUsers();
   }, []);
 
-  const createUser = async () => {
-    await addDoc(userCollectionRef, { name: name, age: age, country: country });
-    setAge("");
-    setCountry("");
-    setAge(0);
+  // ✅ Handle user creation
+  const handleCreateUser = async (userDetail) => {
+    const newUser = await createUser(userDetail);
+    dispatch({ type: "ADD_USER", payload: newUser });
   };
 
-  // console.log("users:\n", users);
+  // ✅ Handle user age update
+  const handleUpdateAge = async (id, age) => {
+    await updateAge(id, age);
+    dispatch({ type: "UPDATE_AGE", payload: { id, age: age + 5 } });
+  };
+
+  // ✅ Handle user deletion
+  const handleDeleteUser = async (id) => {
+    await deleteUser(id);
+    dispatch({ type: "DELETE_USER", payload: id });
+  };
+
   return (
     <div>
-      <input
-        type="text"
-        placeholder="Name..."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+      <UserForm onCreateUser={handleCreateUser} />
+      <UserList
+        users={state.users}
+        onUpdateAge={handleUpdateAge}
+        onDeleteUser={handleDeleteUser}
       />
-      <input
-        type="number"
-        placeholder="Age..."
-        value={age}
-        onChange={(e) => setAge(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Country..."
-        value={country}
-        onChange={(e) => setCountry(e.target.value)}
-      />
-      <button onClick={createUser}>Create User</button>
-      {users.map((user) => {
-        return (
-          <div>
-            <h1>{user.name}</h1>
-            <h1>{user.age}</h1>
-          </div>
-        );
-      })}
     </div>
   );
 };
