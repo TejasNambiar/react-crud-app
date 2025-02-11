@@ -39,10 +39,10 @@ b. By adding id manually, we instantly update the UI.
 
 ## 💡 Final Summary
 
-### Approach Firestore Reads? UI Updates Instantly? Has id for CRUD?(table)
-
-❌ Wait for Firestore to Refetch 🔴 Yes, extra getDocs() call 🔴 No, waits for refetch 🔴 No
-✅ Add id Explicitly (Best) 🟢 No extra reads 🟢 Yes, updates immediately 🟢 Yes
+| Approach                         | Firestore Reads?             | UI Updates Instantly?       | Has id for CRUD? |
+| -------------------------------- | ---------------------------- | --------------------------- | ---------------- |
+| ❌ Wait for Firestore to Refetch | 🔴 Yes, extra getDocs() call | 🔴 No, waits for refetch    | 🔴 No            |
+| ✅ Add id Explicitly (Best)      | 🟢 No extra reads            | 🟢 Yes, updates immediately | 🟢 Yes           |
 
 So, by explicitly adding id, we prevent extra API calls, make the UI more responsive, and ensure that the user object is ready for future updates/deletions. 🚀
 
