@@ -15,24 +15,27 @@ addDoc(userCollectionRef, newUser) → Adds the user to Firestore and returns a 
 { ...newUser, id: docRef.id } → Combines the newly created user’s data with the generated ID.
 dispatch({ type: "ADD_USER", payload: ... }) → Adds the new user (including its ID) to the local state.
 
-### ❓ Why Not Wait for Firestore to Return the Full Object?
+## ❓ Why Not Wait for Firestore to Return the Full Object?
 
 If you don’t explicitly add id, you’ll have to refetch all users from Firestore, which is inefficient because:
 
-1. Firestore Doesn’t Return the Full Object on Creation
+### 1. Firestore Doesn’t Return the Full Object on Creation
 
-   a. addDoc() only gives the ID, not the full document.
-   b. You’d have to call getDoc(docRef) separately to get the full object.
+a. addDoc() only gives the ID, not the full document.
 
-2. Avoids Unnecessary API Calls
+b. You’d have to call getDoc(docRef) separately to get the full object.
 
-   a.Instead of calling getDocs() again to fetch all users, we immediately update local state with the new user.
-   b. This prevents additional Firestore reads, improving performance.
+### 2. Avoids Unnecessary API Calls
 
-3. Faster UI Updates
+a.Instead of calling getDocs() again to fetch all users, we immediately update local state with the new user.
 
-   a. If we waited for Firestore, the UI wouldn’t immediately show the new user.
-   b. By adding id manually, we instantly update the UI.
+b. This prevents additional Firestore reads, improving performance.
+
+### 3. Faster UI Updates
+
+a. If we waited for Firestore, the UI wouldn’t immediately show the new user.
+
+b. By adding id manually, we instantly update the UI.
 
 ## 💡 Final Summary
 
@@ -81,10 +84,11 @@ const handleCreateUser = async (userDetail) => {
 
 ### 🔑 Why This Change? (table)
 
-Approach 🔴 Old Code (Direct Dispatch Inside Firestore) 🟢 New Code (Return Object & Dispatch in App.jsx)
-Separation of Concerns ❌ Firestore logic was handling UI updates ✅ Firestore logic only returns data, UI handles updates
-Code Maintainability ❌ Harder to test & reuse ✅ createUser() can be reused anywhere
-Better State Management ❌ dispatch() inside Firestore violates best practices ✅ dispatch() is handled inside App.jsx
+| Approach                | 🔴 Old Code (Direct Dispatch Inside Firestore)         | 🟢 New Code (Return Object & Dispatch in App.jsx)        |
+| ----------------------- | ------------------------------------------------------ | -------------------------------------------------------- |
+| Separation of Concerns  | ❌ Firestore logic was handling UI updates             | ✅ Firestore logic only returns data, UI handles updates |
+| Code Maintainability    | ❌ Harder to test & reuse                              | ✅ createUser() can be reused anywhere                   |
+| Better State Management | ❌ dispatch() inside Firestore violates best practices | ✅ dispatch() is handled inside App.jsx                  |
 
 ## 🚀 Final Takeaway
 
