@@ -43,8 +43,6 @@ If you don’t explicitly add id, you’ll have to refetch all users from Firest
 
 So, by explicitly adding id, we prevent extra API calls, make the UI more responsive, and ensure that the user object is ready for future updates/deletions. 🚀
 
-=====================================================================================================
-
 ## 📝so why the code difference, initially explicitly used docRef.id, but now adding the entire object?
 
 ### 🔍 Initially: Why Was docRef.id Used Explicitly?
@@ -81,16 +79,12 @@ const handleCreateUser = async (userDetail) => {
 };
 ```
 
-==========================================================
-
 ### 🔑 Why This Change? (table)
 
 Approach 🔴 Old Code (Direct Dispatch Inside Firestore) 🟢 New Code (Return Object & Dispatch in App.jsx)
 Separation of Concerns ❌ Firestore logic was handling UI updates ✅ Firestore logic only returns data, UI handles updates
 Code Maintainability ❌ Harder to test & reuse ✅ createUser() can be reused anywhere
 Better State Management ❌ dispatch() inside Firestore violates best practices ✅ dispatch() is handled inside App.jsx
-
-==========================================================
 
 ## 🚀 Final Takeaway
 
