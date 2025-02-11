@@ -11,83 +11,115 @@ import {
 
 import React, { useEffect, useReducer, useState } from "react";
 
+// ✅ Initial state for the reducer
+const initialState = {
+  users: [], // Stores the list of users retrieved from Firestore
+};
+
+// ✅ Reducer function to handle CRUD actions
+const userActionReducer = (state, action) => {
+  switch (action.type) {
+    case "INITIALIZE":
+      return { users: action.payload }; // Load users from Firestore
+
+    case "ADD_USER":
+      return { users: [...state.users, action.payload] }; // Add a new user to local state
+
+    case "UPDATE_AGE":
+      return {
+        users: state.users.map((user) =>
+          user.id === action.payload.id
+            ? { ...user, age: action.payload.age } // Update only the matching user
+            : user
+        ),
+      };
+
+    case "DELETE_USER":
+      return {
+        users: state.users.filter((user) => user.id !== action.payload), // Remove user from state
+      };
+
+    default:
+      return state; // If action type is unknown, return current state
+  }
+};
+
 export const App = () => {
-  const initialState = {
+  // ✅ Using useReducer instead of useState for managing users efficiently
+  const [state, dispatch] = useReducer(userActionReducer, initialState);
+
+  // ✅ useState for handling form input fields (Name, Age, Country)
+  const [userDetail, setUserDetail] = useState({
     name: "",
-    age: 0,
+    age: "",
     country: "",
-  };
+  });
 
-  // State variables for managing users and input fields
-  const [userDetail, setUserDetail] = useState(initialState);
-
-  // Reference to the Firestore collection "crud"
+  // ✅ Firestore collection reference
   const userCollectionRef = collection(db, "crud");
 
-  // Fetch users from Firestore when the component mounts
+  // ✅ Fetch users from Firestore when the component mounts (Runs only once)
   useEffect(() => {
-    const getUsers = async () => {
-      const data = await getDocs(userCollectionRef); // Retrieve all documents from Firestore
-      console.log(data);
+    const fetchUsers = async () => {
+      const data = await getDocs(userCollectionRef); // Get all users from Firestore
 
-      // Map documents into an array of objects with document data and ID
-      const docRef = data.docs.map((doc) => ({
+      // Transform Firestore documents into an array of user objects
+      const usersList = data.docs.map((doc) => ({
         ...doc.data(),
-        id: doc.id,
+        id: doc.id, // Store Firestore document ID
       }));
 
-      console.log(docRef);
-      // setUsers(docRef); // Update state with fetched user data
-      let state = { input: docRef };
-      console.log("state: \n", state);
-      dispatch({ type: "INITIALIZE", payload: docRef });
+      // Initialize users in state using useReducer
+      dispatch({ type: "INITIALIZE", payload: usersList });
     };
 
-    getUsers();
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+    fetchUsers();
+  }, []); // Empty dependency array ensures this runs once on component mount
 
-  // Function to create a new user in Firestore
+  // ✅ Function to create a new user in Firestore
   const createUser = async () => {
-    await addDoc(userCollectionRef, {
-      name: input.name,
-      age: parseInt(input.age),
-      country: input.country,
-    }); // Add user to Firestore
-    // Reset input fields after creation
-    setUserDetail(initialState);
-  };
-
-  // Function to update the user's age by increasing it by 5
-  const updateAge = async (id, age) => {
-    console.log(id, age);
-    const usersDoc = doc(db, "crud", id); // Get reference to the specific document
-    const newAge = { age: age + 5 }; // New age object to update Firestore
-    await updateDoc(usersDoc, newAge); // Update Firestore document
-  };
-
-  // Function to delete a user from Firestore
-  const deletUser = async (id) => {
-    const usersDoc = doc(db, "crud", id); // Get reference to the document
-    console.log(id);
-    await deleteDoc(usersDoc); // Delete the document from Firestore
-  };
-
-  const userActionReducer = (state, action) => {
-    switch (action.type) {
-      case "INITIALIZE":
-        return { input: action.payload };
-      case "CREATE":
-        return createUser();
-      case "UPDATE":
-        return updateAge(action.payload.id, action.payload.age);
-      case "DELETE":
-        return deletUser(action.payload.id);
-      default:
-        return state;
+    // 1️⃣ Prevent empty inputs
+    if (!userDetail.name || !userDetail.age || !userDetail.country) {
+      alert("Please fill all fields");
+      return;
     }
+
+    // 2️⃣ Create user object
+    const newUser = {
+      name: userDetail.name,
+      age: parseInt(userDetail.age), // Ensure age is stored as a number
+      country: userDetail.country,
+    };
+
+    // 3️⃣ Add user to Firestore
+    const docRef = await addDoc(userCollectionRef, newUser);
+
+    // 4️⃣ Update local state immediately after Firestore operation succeeds
+    dispatch({ type: "ADD_USER", payload: { ...newUser, id: docRef.id } });
+
+    // 5️⃣ Reset input fields
+    setUserDetail({ name: "", age: "", country: "" });
   };
 
-  const [state, dispatch] = useReducer(userActionReducer, userCollectionRef);
+  // ✅ Function to update the user's age by increasing it by 5
+  const updateAge = async (id, age) => {
+    const usersDoc = doc(db, "crud", id); // Get reference to Firestore document
+    const updatedAge = { age: age + 5 }; // Create updated age object
+
+    await updateDoc(usersDoc, updatedAge); // Update Firestore document
+
+    // ✅ Update local state without refetching from Firestore
+    dispatch({ type: "UPDATE_AGE", payload: { id, age: age + 5 } });
+  };
+
+  // ✅ Function to delete a user from Firestore
+  const deleteUser = async (id) => {
+    const usersDoc = doc(db, "crud", id); // Get reference to the Firestore document
+    await deleteDoc(usersDoc); // Delete the document from Firestore
+
+    // ✅ Remove user from local state immediately after deletion
+    dispatch({ type: "DELETE_USER", payload: id });
+  };
 
   return (
     <div>
@@ -113,36 +145,21 @@ export const App = () => {
         }
       />
       {/* Button to create a new user */}
-      <button onClick={() => dispatch({ type: "CREATE" })}>Create User</button>
+      <button onClick={createUser}>Create User</button>
 
       {/* Display user list */}
-      {state.input?.map((user) => {
-        return (
-          <div key={user.id}>
-            <h1>{user.name}</h1>
-            <h1>{user.age}</h1>
-            {/* Button to update user age */}
-            <button
-              onClick={() =>
-                dispatch({
-                  type: "UPDATE",
-                  payload: { id: user.id, age: user.age },
-                })
-              }
-            >
-              Update Age
-            </button>
-            {/* Button to delete user */}
-            <button
-              onClick={() =>
-                dispatch({ type: "DELETE", payload: { id: user.id } })
-              }
-            >
-              Delete User
-            </button>
-          </div>
-        );
-      })}
+      {state.users.map((user) => (
+        <div key={user.id}>
+          <h1>{user.name}</h1>
+          <h1>{user.age}</h1>
+          {/* Button to update user age */}
+          <button onClick={() => updateAge(user.id, user.age)}>
+            Update Age
+          </button>
+          {/* Button to delete user */}
+          <button onClick={() => deleteUser(user.id)}>Delete User</button>
+        </div>
+      ))}
     </div>
   );
 };
