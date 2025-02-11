@@ -83,7 +83,7 @@ const handleCreateUser = async (userDetail) => {
 
 ==========================================================
 
-### 🔑 Why This Change?
+### 🔑 Why This Change? (table)
 
 Approach 🔴 Old Code (Direct Dispatch Inside Firestore) 🟢 New Code (Return Object & Dispatch in App.jsx)
 Separation of Concerns ❌ Firestore logic was handling UI updates ✅ Firestore logic only returns data, UI handles updates
