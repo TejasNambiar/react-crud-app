@@ -41,47 +41,4 @@ useReducer simplifies state logic.
 No unnecessary re-renders.
 Minimal Firestore reads.
 
-### i noticed here you are adding id instead of the entire user object to the list, can you explain why?
-
-#### What’s Happening?
-
-When a new user is added to Firestore, the addDoc() function does not return the full document object, but instead, it only returns a reference (docRef) containing the new document's ID.
-
-Code in createUser:
-
-```JavaScript
-const docRef = await addDoc(userCollectionRef, newUser);
-dispatch({ type: "ADD_USER", payload: { ...newUser, id: docRef.id } });
-```
-
-addDoc(userCollectionRef, newUser) → Adds the user to Firestore and returns a docRef with the document's ID.
-{ ...newUser, id: docRef.id } → Combines the newly created user’s data with the generated ID.
-dispatch({ type: "ADD_USER", payload: ... }) → Adds the new user (including its ID) to the local state.
-
-#### ❓ Why Not Wait for Firestore to Return the Full Object?
-
-If you don’t explicitly add id, you’ll have to refetch all users from Firestore, which is inefficient because:
-
-1. Firestore Doesn’t Return the Full Object on Creation
-
-   a. addDoc() only gives the ID, not the full document.
-   b. You’d have to call getDoc(docRef) separately to get the full object.
-
-2. Avoids Unnecessary API Calls
-
-   a.Instead of calling getDocs() again to fetch all users, we immediately update local state with the new user.
-   b. This prevents additional Firestore reads, improving performance.
-
-3. Faster UI Updates
-
-   a. If we waited for Firestore, the UI wouldn’t immediately show the new user.
-   b. By adding id manually, we instantly update the UI.
-
-💡 Final Summary
-
-### Approach Firestore Reads? UI Updates Instantly? Has id for CRUD?(table)
-
-❌ Wait for Firestore to Refetch 🔴 Yes, extra getDocs() call 🔴 No, waits for refetch 🔴 No
-✅ Add id Explicitly (Best) 🟢 No extra reads 🟢 Yes, updates immediately 🟢 Yes
-
-So, by explicitly adding id, we prevent extra API calls, make the UI more responsive, and ensure that the user object is ready for future updates/deletions. 🚀
+For Reducer optimizations please refer [text](Reducer-optimization-Notes.md)
