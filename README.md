@@ -41,7 +41,7 @@ useReducer simplifies state logic.
 No unnecessary re-renders.
 Minimal Firestore reads.
 
-### i noticed her you are adding id instead of the entire user object to the list, can you explain why?
+### i noticed here you are adding id instead of the entire user object to the list, can you explain why?
 
 #### What’s Happening?
 
@@ -63,18 +63,24 @@ dispatch({ type: "ADD_USER", payload: ... }) → Adds the new user (including it
 If you don’t explicitly add id, you’ll have to refetch all users from Firestore, which is inefficient because:
 
 1. Firestore Doesn’t Return the Full Object on Creation
+
    a. addDoc() only gives the ID, not the full document.
    b. You’d have to call getDoc(docRef) separately to get the full object.
+
 2. Avoids Unnecessary API Calls
+
    a.Instead of calling getDocs() again to fetch all users, we immediately update local state with the new user.
    b. This prevents additional Firestore reads, improving performance.
+
 3. Faster UI Updates
+
    a. If we waited for Firestore, the UI wouldn’t immediately show the new user.
    b. By adding id manually, we instantly update the UI.
 
 💡 Final Summary
 
-Approach Firestore Reads? UI Updates Instantly? Has id for CRUD?
+### Approach Firestore Reads? UI Updates Instantly? Has id for CRUD?(table)
+
 ❌ Wait for Firestore to Refetch 🔴 Yes, extra getDocs() call 🔴 No, waits for refetch 🔴 No
 ✅ Add id Explicitly (Best) 🟢 No extra reads 🟢 Yes, updates immediately 🟢 Yes
 
