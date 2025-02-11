@@ -4,7 +4,7 @@ const UserForm = ({ onCreateUser }) => {
   // ✅ Local state for form inputs
   const [userDetail, setUserDetail] = useState({
     name: "",
-    age: "",
+    age: 0,
     country: "",
   });
 
@@ -22,7 +22,7 @@ const UserForm = ({ onCreateUser }) => {
     onCreateUser(userDetail);
 
     // 3️⃣ Reset form fields
-    setUserDetail({ name: "", age: "", country: "" });
+    setUserDetail({ name: "", age: 0, country: "" });
   };
 
   return (
@@ -37,7 +37,9 @@ const UserForm = ({ onCreateUser }) => {
         type="number"
         placeholder="Age..."
         value={userDetail.age}
-        onChange={(e) => setUserDetail({ ...userDetail, age: e.target.value })}
+        onChange={(e) =>
+          setUserDetail({ ...userDetail, age: parseInt(e.target.value) })
+        }
       />
       <input
         type="text"
