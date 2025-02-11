@@ -1,4 +1,4 @@
-## 📝i noticed here you are adding id instead of the entire user object to the list, can you explain why? (commit/cc4a9b45312cc08674d6c3dc57ea2c7288c9a772)
+## 📝i noticed here you are adding id instead of the entire user object to the list, can you explain why? (Commit cc4a9b4)
 
 ### What’s Happening?
 
@@ -46,7 +46,7 @@ b. By adding id manually, we instantly update the UI.
 
 So, by explicitly adding id, we prevent extra API calls, make the UI more responsive, and ensure that the user object is ready for future updates/deletions. 🚀
 
-## 📝so why the code difference, initially explicitly used docRef.id, but now adding the entire object?
+## 📝so why the code difference, initially explicitly used docRef.id, but now adding the entire object? (Commit d305f15)
 
 ### 🔍 Initially: Why Was docRef.id Used Explicitly?
 
