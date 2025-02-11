@@ -9,14 +9,17 @@ import {
   updateDoc, // Function to update a document in Firestore
 } from "firebase/firestore";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 
 export const App = () => {
+  const initialState = {
+    name: "",
+    age: 0,
+    country: "",
+  };
+
   // State variables for managing users and input fields
-  const [users, setUsers] = useState([]); // Stores user data from Firestore
-  const [name, setName] = useState(""); // Stores input for name
-  const [country, setCountry] = useState(""); // Stores input for country
-  const [age, setAge] = useState(0); // Stores input for age
+  const [userDetail, setUserDetail] = useState(initialState);
 
   // Reference to the Firestore collection "crud"
   const userCollectionRef = collection(db, "crud");
@@ -34,7 +37,10 @@ export const App = () => {
       }));
 
       console.log(docRef);
-      setUsers(docRef); // Update state with fetched user data
+      // setUsers(docRef); // Update state with fetched user data
+      let state = { input: docRef };
+      console.log("state: \n", state);
+      dispatch({ type: "INITIALIZE", payload: docRef });
     };
 
     getUsers();
@@ -43,13 +49,12 @@ export const App = () => {
   // Function to create a new user in Firestore
   const createUser = async () => {
     await addDoc(userCollectionRef, {
-      name: name,
-      age: parseInt(age),
-      country: country,
+      name: input.name,
+      age: parseInt(input.age),
+      country: input.country,
     }); // Add user to Firestore
-    setName(""); // Reset input fields after creation
-    setCountry("");
-    setAge(0);
+    // Reset input fields after creation
+    setUserDetail(initialState);
   };
 
   // Function to update the user's age by increasing it by 5
@@ -67,42 +72,74 @@ export const App = () => {
     await deleteDoc(usersDoc); // Delete the document from Firestore
   };
 
+  const userActionReducer = (state, action) => {
+    switch (action.type) {
+      case "INITIALIZE":
+        return { input: action.payload };
+      case "CREATE":
+        return createUser();
+      case "UPDATE":
+        return updateAge(action.payload.id, action.payload.age);
+      case "DELETE":
+        return deletUser(action.payload.id);
+      default:
+        return state;
+    }
+  };
+
+  const [state, dispatch] = useReducer(userActionReducer, userCollectionRef);
+
   return (
     <div>
       {/* Input fields for user details */}
       <input
         type="text"
         placeholder="Name..."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={userDetail.name}
+        onChange={(e) => setUserDetail({ ...userDetail, name: e.target.value })}
       />
       <input
         type="number"
         placeholder="Age..."
-        value={age}
-        onChange={(e) => setAge(e.target.value)}
+        value={userDetail.age}
+        onChange={(e) => setUserDetail({ ...userDetail, age: e.target.value })}
       />
       <input
         type="text"
         placeholder="Country..."
-        value={country}
-        onChange={(e) => setCountry(e.target.value)}
+        value={userDetail.country}
+        onChange={(e) =>
+          setUserDetail({ ...userDetail, country: e.target.value })
+        }
       />
       {/* Button to create a new user */}
-      <button onClick={createUser}>Create User</button>
+      <button onClick={() => dispatch({ type: "CREATE" })}>Create User</button>
 
       {/* Display user list */}
-      {users.map((user) => {
+      {state.input?.map((user) => {
         return (
           <div key={user.id}>
             <h1>{user.name}</h1>
             <h1>{user.age}</h1>
             {/* Button to update user age */}
-            <button onClick={() => updateAge(user.id, user.age)}>
+            <button
+              onClick={() =>
+                dispatch({
+                  type: "UPDATE",
+                  payload: { id: user.id, age: user.age },
+                })
+              }
+            >
               Update Age
             </button>
             {/* Button to delete user */}
-            <button onClick={() => deletUser(user.id)}>Delete User</button>
+            <button
+              onClick={() =>
+                dispatch({ type: "DELETE", payload: { id: user.id } })
+              }
+            >
+              Delete User
+            </button>
           </div>
         );
       })}
