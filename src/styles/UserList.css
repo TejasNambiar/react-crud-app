@@ -1,0 +1,134 @@
+/* Reset default margin & padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Centering the table container */
+.user-table-container {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    margin-top: 20px;
+}
+
+/* Table styling */
+.user-table {
+    width: 95%; /* Responsive width */
+    max-width: 1500px; /* Prevents it from becoming too wide */
+    text-align: center; /* Center text */
+    border-collapse: collapse; /* Fixes missing borders */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Ensures border-radius applies correctly */
+}
+
+/* Borders for the table */
+.user-table th,
+.user-table tr {
+    border: 1px solid #ddd; /* Adds visible borders */
+    padding: 10px;
+}
+
+/* Header row styling */
+.user-table thead {
+    background-color: #747980;
+    color: white;
+    font-weight: bold;
+}
+
+/* Zebra striping for better readability */
+.user-table tbody tr:nth-child(even) {
+    background-color: #e2e4e6;
+}
+
+/* Button container */
+.user-table .action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Adds spacing between buttons */
+}
+
+/* Button styling */
+.user-table .action-buttons button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s ease-in-out;
+}
+
+.user-table .action-buttons button:first-child {
+    background-color: #28a745; /* Green for update */
+    color: white;
+}
+
+.user-table .action-buttons button:first-child:hover {
+    background-color: #218838;
+}
+
+.user-table .action-buttons button:last-child {
+    background-color: #dc3545; /* Red for delete */
+    color: white;
+}
+
+.user-table .action-buttons button:last-child:hover {
+    background-color: #c82333;
+}
+
+
+/* Column-specific width adjustments */
+.user-table th:nth-child(1), /* Serial No. */
+.user-table td:nth-child(1) {
+    width: 8%; /* Reduce width for Sr. No. */
+}
+
+.user-table th:nth-child(2), /* Name */
+.user-table td:nth-child(2) {
+    width: 30%; /* Give Name the most space */
+}
+
+.user-table th:nth-child(3), /* Age */
+.user-table td:nth-child(3) {
+    width: auto; /* Let age be auto-sized */
+}
+
+.user-table th:nth-child(4), /* Action */
+.user-table td:nth-child(4) {
+    width: 20%; /* Reduce width for action buttons */
+}
+
+/* Ensure action buttons remain aligned */
+.user-table .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; /* Reduce space between buttons */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .user-table th:nth-child(1), /* Serial No. */
+    .user-table td:nth-child(1) {
+        width: 5%; /* Reduce further for small screens */
+    }
+
+    .user-table th:nth-child(2), /* Name */
+    .user-table td:nth-child(2) {
+        width: 40%; /* Expand name column on small screens */
+    }
+
+    .user-table th:nth-child(4), /* Action */
+    .user-table td:nth-child(4) {
+        width: 17%; /* Further shrink action buttons */
+    }
+
+    /* Make action buttons stack on small screens */
+    .user-table .action-buttons {
+        flex-direction: column;
+    }
+}
