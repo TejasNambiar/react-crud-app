@@ -1,0 +1,57 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Centering the form container */
+.user-form-container {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  /* height: 50vh; Takes up half the viewport height */
+}
+
+.user-form {
+    background: #ff0202; /* White background */
+    padding: 20px 30px;
+    border-radius: 0px 0px 16px 16px; /* Rounded corners */
+    box-shadow: 10px 6px 0px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    text-align: center; /* Center text and inputs */
+    width: 100%; /* Fixed width */
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* Centers horizontally */
+    gap: 15px; /* Space between inputs */
+    
+}
+
+/* Input field styling */
+.user-form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+.user-form .country,
+.user-form .name {
+    width: 30%; /* Adjusted size */
+}
+
+.user-form .age {
+    width: 15%; /* Adjusted size */
+}
+
+.user-form button {
+    background-color: #007bff;
+    width: 20%;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
