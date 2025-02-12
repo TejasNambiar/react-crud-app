@@ -32,7 +32,6 @@ const UserForm = ({ onCreateUser }) => {
         <input
           type="text"
           placeholder="Name..."
-          id="name"
           value={userDetail.name}
           onChange={(e) =>
             setUserDetail({ ...userDetail, name: e.target.value })
@@ -40,7 +39,6 @@ const UserForm = ({ onCreateUser }) => {
         />
         <input
           type="number"
-          className="age"
           placeholder="Age..."
           value={userDetail.age}
           onChange={(e) =>
@@ -49,14 +47,16 @@ const UserForm = ({ onCreateUser }) => {
         />
         <input
           type="text"
-          className="country"
           placeholder="Country..."
           value={userDetail.country}
           onChange={(e) =>
             setUserDetail({ ...userDetail, country: e.target.value })
           }
         />
-        <button type="submit">Create User</button>
+
+        <button className="submit-btn" type="submit">
+          Create User
+        </button>
       </form>
     </div>
   );
