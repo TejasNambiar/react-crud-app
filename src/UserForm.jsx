@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./styles/UserForm.css";
 
 const UserForm = ({ onCreateUser }) => {
   // ✅ Local state for form inputs
@@ -26,31 +27,38 @@ const UserForm = ({ onCreateUser }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Name..."
-        value={userDetail.name}
-        onChange={(e) => setUserDetail({ ...userDetail, name: e.target.value })}
-      />
-      <input
-        type="number"
-        placeholder="Age..."
-        value={userDetail.age}
-        onChange={(e) =>
-          setUserDetail({ ...userDetail, age: parseInt(e.target.value) })
-        }
-      />
-      <input
-        type="text"
-        placeholder="Country..."
-        value={userDetail.country}
-        onChange={(e) =>
-          setUserDetail({ ...userDetail, country: e.target.value })
-        }
-      />
-      <button type="submit">Create User</button>
-    </form>
+    <div className="user-form-container">
+      <form className="user-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Name..."
+          value={userDetail.name}
+          onChange={(e) =>
+            setUserDetail({ ...userDetail, name: e.target.value })
+          }
+        />
+        <input
+          type="number"
+          placeholder="Age..."
+          value={userDetail.age}
+          onChange={(e) =>
+            setUserDetail({ ...userDetail, age: parseInt(e.target.value) })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Country..."
+          value={userDetail.country}
+          onChange={(e) =>
+            setUserDetail({ ...userDetail, country: e.target.value })
+          }
+        />
+
+        <button className="submit-btn" type="submit">
+          Create User
+        </button>
+      </form>
+    </div>
   );
 };
 
